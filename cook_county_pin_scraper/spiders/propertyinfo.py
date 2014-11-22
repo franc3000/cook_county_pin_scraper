@@ -52,6 +52,7 @@ class PropertyinfoSpider(CSVFeedSpider):
 			item['property_class_description'] = self.extract_with_prefix(response, 'msgPropertyClassDescription').split(' - ')[1]
 		else:
 			item['property_class_description'] = None
+
         item['property_class'] = {
             'class': self.extract_with_prefix(response, 'propertyClass'),
             'description': item['property_class_description']
