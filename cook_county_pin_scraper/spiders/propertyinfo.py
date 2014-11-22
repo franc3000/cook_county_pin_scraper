@@ -47,15 +47,15 @@ class PropertyinfoSpider(CSVFeedSpider):
         if item['building_size']:
             item['building_size'] = int(item['building_size'].replace(',', ''))
 
-        item['property_class_description'] = self.extract_with_prefix(response, 'msgPropertyClassDescription', '/b')
-        if item['property_class_description']:
-            item['property_class_description'] = self.extract_with_prefix(response, 'msgPropertyClassDescription').split(' - ')[1]
+        property_class_description = self.extract_with_prefix(response, 'msgPropertyClassDescription', '/b')
+        if property_class_description:
+            property_class_description = self.extract_with_prefix(response, 'msgPropertyClassDescription').split(' - ')[1]
         else:
-            item['property_class_description'] = None
+            property_class_description = None
 
         item['property_class'] = {
             'class': self.extract_with_prefix(response, 'propertyClass'),
-            'description': item['property_class_description']
+            'description': property_class_description
         }
         item['building_age'] = self.extract_with_prefix(response, 'propertyBuildingAge')
 
