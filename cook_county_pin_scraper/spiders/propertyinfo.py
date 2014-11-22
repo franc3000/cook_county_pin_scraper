@@ -98,6 +98,8 @@ class PropertyinfoSpider(CSVFeedSpider):
 
         tax_code_year = int(self.extract_with_prefix(response, 'taxCodeTaxYear')[1:5])
         tax_code = self.extract_with_prefix(response, 'propertyTaxCode')
+        # sometimes the tax_code_year is not contained in the years item from above so we must set an empty array for it
+        years[tax_code_year] = {}
         years[tax_code_year]['tax_code'] = tax_code
 
         item['tax_history'] = []
