@@ -11,7 +11,7 @@ Setup and Running
 mkvirtualenv --no-site-packages cook_county_pin_scraper
 pip install scrapy
 # Clone the git repo
-git clone git@github.com:iandees/cook_county_pin_scraper.git
+git clone git@github.com:stevevance/cook_county_pin_scraper.git
 # Update the list of PINs you want to scrape by changing the file on line 12 in cook_county_pin_scraper/spiders/propertyinfo.py
 # Run the scraper
 cd cook_county_pin_scraper
