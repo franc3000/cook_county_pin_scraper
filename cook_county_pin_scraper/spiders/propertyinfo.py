@@ -9,7 +9,7 @@ class PropertyinfoSpider(CSVFeedSpider):
     name = "propertyinfo"
     allowed_domains = ["www.cookcountypropertyinfo.com"]
     start_urls = (
-        'http://www.chicagocityscape.com/propertytaxes/all_cook_pins_unique.txt',
+        'http://www.chicagocityscape.com/propertytaxes/pins_missing_from_propertytaxes.txt',
     )
 
     def parse_row(self, response, row):
