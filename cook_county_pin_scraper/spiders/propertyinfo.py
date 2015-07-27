@@ -7,8 +7,10 @@ from cook_county_pin_scraper.items import Property
 class PropertyinfoSpider(CSVFeedSpider):
     headers = ['pin']
     name = "propertyinfo"
-    allowed_domains = ["www.cookcountypropertyinfo.com"]
-    start_urls = ["http://www.chicagocityscape.com/propertytaxes/pins_lists/1-350k.txt"]
+    allowed_domains = ["cookcountypropertyinfo.com"]
+    start_urls = [
+    	"http://www.chicagocityscape.com/propertytaxes/pins_lists/1-350k.txt"
+    ]
 
     def parse_row(self, response, row):
         pin = row['pin']
