@@ -8,9 +8,7 @@ class PropertyinfoSpider(CSVFeedSpider):
     headers = ['pin']
     name = "propertyinfo"
     allowed_domains = ["www.cookcountypropertyinfo.com"]
-    start_urls = [
-        'http://www.chicagocityscape.com/propertytaxes/pins_lists/1-350k.txt'
-    ]
+    start_urls = ["http://www.chicagocityscape.com/propertytaxes/pins_lists/1-350k.txt"]
 
     def parse_row(self, response, row):
         pin = row['pin']
