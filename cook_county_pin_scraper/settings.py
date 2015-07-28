@@ -12,8 +12,8 @@ BOT_NAME = 'cook_county_pins'
 
 SPIDER_MODULES = ['cook_county_pin_scraper.spiders']
 NEWSPIDER_MODULE = 'cook_county_pin_scraper.spiders'
-DOWNLOAD_DELAY = 0.035
-CONCURRENT_REQUESTS = 1
+DOWNLOAD_DELAY = 0.03
+CONCURRENT_REQUESTS = 4
 MEMDEBUG_ENABLED = True
 #MEMDEBUG_NOTIFY = ['jamesbondsv@gmail.com']
 
