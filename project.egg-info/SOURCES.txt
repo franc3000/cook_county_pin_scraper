@@ -1,0 +1,12 @@
+setup.py
+cook_county_pin_scraper/__init__.py
+cook_county_pin_scraper/items.py
+cook_county_pin_scraper/pipelines.py
+cook_county_pin_scraper/settings.py
+cook_county_pin_scraper/spiders/__init__.py
+cook_county_pin_scraper/spiders/propertyinfo.py
+project.egg-info/PKG-INFO
+project.egg-info/SOURCES.txt
+project.egg-info/dependency_links.txt
+project.egg-info/entry_points.txt
+project.egg-info/top_level.txt
