@@ -11,6 +11,7 @@ class PropertyinfoSpider(CSVFeedSpider):
     start_urls = [
     	"http://www.chicagocityscape.com/propertytaxes/pins_lists/0-250000.csv"
     ]
+    state = OrderedDict()
 
     def parse_row(self, response, row):
         pin = row['pin']
