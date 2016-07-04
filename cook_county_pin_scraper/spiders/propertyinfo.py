@@ -9,7 +9,7 @@ class PropertyinfoSpider(CSVFeedSpider):
     name = "propertyinfo"
     allowed_domains = ["cookcountypropertyinfo.com"]
     start_urls = [
-    	"http://www.chicagocityscape.com/propertytaxes/pins_lists/1250001-1500000.csv.csv"
+    	"http://www.chicagocityscape.com/propertytaxes/pins_lists/1250001-1500000.csv"
     ]
     state = OrderedDict()
 
