@@ -12,8 +12,8 @@ BOT_NAME = 'cook_county_pins'
 
 SPIDER_MODULES = ['cook_county_pin_scraper.spiders']
 NEWSPIDER_MODULE = 'cook_county_pin_scraper.spiders'
-DOWNLOAD_DELAY = 0.018
-CONCURRENT_REQUESTS = 10
+DOWNLOAD_DELAY = 0.015
+CONCURRENT_REQUESTS = 14
 MEMDEBUG_ENABLED = True
 COOKIES_DEBUG = False
 DOWNLOAD_TIMEOUT = 1000
