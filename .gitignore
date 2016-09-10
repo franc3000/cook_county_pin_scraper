@@ -2,3 +2,5 @@
 *.swp
 .venv
 .DS_Store
+
+properties.json
