@@ -16,6 +16,8 @@ class Property(scrapy.Item):
     zip_code = scrapy.Field()
     township = scrapy.Field()
     
+    status = scrapy.Field()
+    
     estimated_property_value = scrapy.Field()
     total_assessed_value = scrapy.Field()
     exemptions = scrapy.Field()
