@@ -49,8 +49,13 @@ class PropertyinfoSpider(CSVFeedSpider):
             item['estimated_property_value'] = float(self.extract_with_prefix(response, 'TaxYearInfo_propertyEstimatedValue').replace('$', '').replace(',',''))
         else:
             item['estimated_property_value'] = None
-        item['total_assessed_value'] = float(self.extract_with_prefix(response, 'TaxYearInfo_propertyAssessedValue').replace('$', '').replace(',',''))
-
+            
+        total_assessed_value = self.extract_with_prefix(response, 'TaxYearInfo_propertyAssessedValue')
+        if total_assessed_value: 
+            item['total_assessed_value'] = float(self.extract_with_prefix(response, 'TaxYearInfo_propertyAssessedValue').replace('$', '').replace(',',''))
+        else:
+            item['total_assessed_value'] = None
+        
         item['lot_size'] = self.extract_with_prefix(response, 'TaxYearInfo_propertyLotSize')
         if item['lot_size']:
             item['lot_size'] = int(item['lot_size'].replace(',', ''))
