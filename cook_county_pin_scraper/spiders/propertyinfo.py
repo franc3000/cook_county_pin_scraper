@@ -34,9 +34,12 @@ class PropertyinfoSpider(CSVFeedSpider):
 
         item = Property()
 
-        item['property_tax_year'] = self.extract_with_prefix(response, 'TaxYearInfo_assessmentTaxYear2')
-        if item['property_tax_year'][-4:].isnumeric():
-            item['property_tax_year'] = int(item['property_tax_year'][-4:])
+        property_tax_year = self.extract_with_prefix(response, 'TaxYearInfo_assessmentTaxYear2')
+        if property_tax_year:
+            if item['property_tax_year'][-4:].isnumeric():
+                item['property_tax_year'] = int(item['property_tax_year'][-4:])
+            else:
+                item['property_tax_year'] = -1
         else:
             item['property_tax_year'] = -1
 
