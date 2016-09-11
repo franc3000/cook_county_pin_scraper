@@ -118,12 +118,12 @@ class PropertyinfoSpider(CSVFeedSpider):
 
             bill_exemption = response.xpath('//div[@id="ContentPlaceHolder1_TaxBillInfo_rptTaxBill_Panel5_{}"]/div[@class="pop2Display"]/a/span/text()'.format(i)).extract()
             if bill_exemption:
-			    years[bill_year]['exempt'] = str(bill_exemption)
+			    years[bill_year]['exempt'] = 'Exempt PIN'
 			    item['status'] = 'exempt'
 
             not_available = response.xpath('//div[@id="ContentPlaceHolder1_TaxBillInfo_rptTaxBill_Panel6_{}"]/div[@class="pop2Display"]/a/span/text()'.format(i)).extract()
             if not_available:
-			    years[bill_year]['not_available'] = str(not_available)
+			    years[bill_year]['not_available'] = 'Not Available'
 
         # Do TAX ASSESSMENTS
         for row in response.xpath('//div[@id="assesspop2"]/div[@class="modal-body2"]/table/tr'):
