@@ -35,8 +35,10 @@ class PropertyinfoSpider(CSVFeedSpider):
         item = Property()
 
         item['property_tax_year'] = self.extract_with_prefix(response, 'TaxYearInfo_assessmentTaxYear2')
-        if item['property_tax_year']:
+        if item['property_tax_year'][-4:].isnumeric():
             item['property_tax_year'] = int(item['property_tax_year'][-4:])
+        else:
+            item['property_tax_year'] = -1
 
         item['pin'] = self.extract_with_prefix(response, 'lblResultTitle')
         item['address'] = self.extract_with_prefix(response, 'PropertyInfo_propertyAddress')
@@ -46,13 +48,13 @@ class PropertyinfoSpider(CSVFeedSpider):
         
         estimated_property_value = self.extract_with_prefix(response, 'TaxYearInfo_propertyEstimatedValue')
         if estimated_property_value: 
-            item['estimated_property_value'] = float(self.extract_with_prefix(response, 'TaxYearInfo_propertyEstimatedValue').replace('$', '').replace(',',''))
+            item['estimated_property_value'] = float(estimated_property_value.replace('$', '').replace(',',''))
         else:
             item['estimated_property_value'] = None
             
         total_assessed_value = self.extract_with_prefix(response, 'TaxYearInfo_propertyAssessedValue')
         if total_assessed_value: 
-            item['total_assessed_value'] = float(self.extract_with_prefix(response, 'TaxYearInfo_propertyAssessedValue').replace('$', '').replace(',',''))
+            item['total_assessed_value'] = float(total_assessed_value.replace('$', '').replace(',',''))
         else:
             item['total_assessed_value'] = None
         
@@ -112,9 +114,12 @@ class PropertyinfoSpider(CSVFeedSpider):
             }
                 
             bill_exemption = response.xpath('//div[@id="ContentPlaceHolder1_TaxBillInfo_rptTaxBill_Panel5_{}"]/div[@class="pop2Display"]/a/span/text()'.format(i))
-            #bill_exemption = self.extract_with_prefix(response, 'TaxBillInfo_rptTaxBill_Panel5_{}'.format(i))
             if bill_exemption:
 			    years[year]['exempt'] = bill_exemption
+			    
+			not_available = response.xpath('//div[@id="ContentPlaceHolder1_TaxBillInfo_rptTaxBill_Panel6_{}"]/div[@class="pop2Display"]/a/span/text()'.format(i))
+            if not_available:
+			    years[year]['not_available'] = not_available
             
 
         # Do TAX ASSESSMENTS
