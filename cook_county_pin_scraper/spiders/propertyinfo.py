@@ -27,7 +27,7 @@ class PropertyinfoSpider(CSVFeedSpider):
             return None
 
     def parse_pin(self, response):
-        if self.extract_with_prefix(response, 'resultsNotFoundPanel'):
+        if self.extract_with_prefix(response, 'failure'):
             yield None
             
         self.state['items_count'] = self.state.get('items_count', 0) + 1
