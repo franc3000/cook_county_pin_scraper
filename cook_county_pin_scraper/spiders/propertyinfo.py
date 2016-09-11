@@ -11,7 +11,7 @@ class PropertyinfoSpider(CSVFeedSpider):
     name = "propertyinfo"
     allowed_domains = ["cookcountypropertyinfo.com"]
     start_urls = [
-    	"file:///cook_county_pin_scraper/lists/716594.txt"
+    	"file:///cook_county_pin_scraper/lists/4.txt"
     ]
     state = OrderedDict()
 
@@ -53,13 +53,13 @@ class PropertyinfoSpider(CSVFeedSpider):
         if estimated_property_value: 
             item['estimated_property_value'] = float(estimated_property_value.replace('$', '').replace(',',''))
         else:
-            item['estimated_property_value'] = None
+            item['estimated_property_value'] = -1
             
         total_assessed_value = self.extract_with_prefix(response, 'TaxYearInfo_propertyAssessedValue')
         if total_assessed_value: 
             item['total_assessed_value'] = float(total_assessed_value.replace('$', '').replace(',',''))
         else:
-            item['total_assessed_value'] = None
+            item['total_assessed_value'] = -1
         
         item['lot_size'] = self.extract_with_prefix(response, 'TaxYearInfo_propertyLotSize')
         if item['lot_size']:
@@ -84,7 +84,7 @@ class PropertyinfoSpider(CSVFeedSpider):
         if building_age:
             item['building_age'] = building_age
         else:
-            item['building_age'] = None
+            item['building_age'] = -1
         # building age isn't there as of 2015 tax year
 
         mailing_tax_year = self.extract_with_prefix(response, 'mailingTaxYear', '/b')
