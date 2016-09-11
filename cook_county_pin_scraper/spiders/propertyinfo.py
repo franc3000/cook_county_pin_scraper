@@ -117,7 +117,7 @@ class PropertyinfoSpider(CSVFeedSpider):
             if bill_exemption:
 			    years[year]['exempt'] = bill_exemption
 
-		    not_available = response.xpath('//div[@id="ContentPlaceHolder1_TaxBillInfo_rptTaxBill_Panel6_{}"]/div[@class="pop2Display"]/a/span/text()'.format(i))
+            not_available = response.xpath('//div[@id="ContentPlaceHolder1_TaxBillInfo_rptTaxBill_Panel6_{}"]/div[@class="pop2Display"]/a/span/text()'.format(i))
             if not_available:
 			    years[year]['not_available'] = not_available
 
