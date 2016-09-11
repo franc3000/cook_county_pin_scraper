@@ -108,19 +108,18 @@ class PropertyinfoSpider(CSVFeedSpider):
             bill_amount = self.extract_with_prefix(response, 'TaxBillInfo_rptTaxBill_taxBillAmount_{}'.format(i))
             if bill_amount:
                 bill_amount = float(bill_amount.replace('$', '').replace(',', ''))
-                
+
             years[bill_year] = {
                 'bill': bill_amount
             }
-                
+
             bill_exemption = response.xpath('//div[@id="ContentPlaceHolder1_TaxBillInfo_rptTaxBill_Panel5_{}"]/div[@class="pop2Display"]/a/span/text()'.format(i))
             if bill_exemption:
 			    years[year]['exempt'] = bill_exemption
-			    
+
 		    not_available = response.xpath('//div[@id="ContentPlaceHolder1_TaxBillInfo_rptTaxBill_Panel6_{}"]/div[@class="pop2Display"]/a/span/text()'.format(i))
             if not_available:
 			    years[year]['not_available'] = not_available
-            
 
         # Do TAX ASSESSMENTS
         for row in response.xpath('//div[@id="assesspop2"]/div[@class="modal-body2"]/table/tr'):
