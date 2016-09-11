@@ -111,7 +111,7 @@ class PropertyinfoSpider(CSVFeedSpider):
                 'bill': bill_amount
             }
                 
-            bill_exemption = response.xpath('//div[@id="ContentPlaceHolder1_TaxBillInfo_rptTaxBill_Panel5_{}"]/div[@class="pop2Display"]/a/span/text()').format(i)
+            bill_exemption = response.xpath('//div[@id="ContentPlaceHolder1_TaxBillInfo_rptTaxBill_Panel5_{}"]/div[@class="pop2Display"]/a/span/text()'.format(i))
             #bill_exemption = self.extract_with_prefix(response, 'TaxBillInfo_rptTaxBill_Panel5_{}'.format(i))
             if bill_exemption:
 			    years[year]['exempt'] = bill_exemption
