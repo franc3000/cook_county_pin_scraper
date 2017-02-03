@@ -76,7 +76,7 @@ class PropertyinfoSpider(CSVFeedSpider):
         ])
 
         years = OrderedDict()
-        for i in range(1, 6):
+        for i in range(1, 4):
             bill_year = self.extract_with_prefix(response, 'rptTaxBill_ctl0{}_taxBillYear'.format(i))
             if bill_year:
                 bill_year = int(bill_year)
