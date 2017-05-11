@@ -12,10 +12,12 @@ BOT_NAME = 'cook_county_pins'
 
 SPIDER_MODULES = ['cook_county_pin_scraper.spiders']
 NEWSPIDER_MODULE = 'cook_county_pin_scraper.spiders'
-DOWNLOAD_DELAY = 0.025
-CONCURRENT_REQUESTS = 5
+DOWNLOAD_DELAY = 0.006
+CONCURRENT_REQUESTS = 36
 MEMDEBUG_ENABLED = True
-#MEMDEBUG_NOTIFY = ['jamesbondsv@gmail.com']
-
-# Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'cook_county_pin_scraper (+http://www.yourdomain.com)'
+COOKIES_DEBUG = False
+DOWNLOAD_TIMEOUT = 1000
+DUPEFILTER_CLASS = 'cook_county_pin_scraper.custom_filters.CustomFilter'
+DEFAULT_REQUEST_HEADERS = {
+    'Referer': 'http://www.cookcountypropertyinfo.com/cookviewerpinresults.aspx?pin=14193270260000'
+}
