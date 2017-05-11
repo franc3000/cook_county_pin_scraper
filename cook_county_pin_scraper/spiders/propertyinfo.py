@@ -10,8 +10,8 @@ class PropertyinfoSpider(CSVFeedSpider):
     headers = ['pin']
     name = "propertyinfo"
     allowed_domains = ["cookcountypropertyinfo.com"]
-    start_urls = [
-    	"file:///cook_county_pin_scraper/lists/23967.txt"
+    start_urls = [ 
+    	"file:///list_of_pins.txt"
     ]
     state = OrderedDict()
 
@@ -101,7 +101,7 @@ class PropertyinfoSpider(CSVFeedSpider):
             ('city_state_zip', mailing_city_state_zip),
         ])
 
-        # Make YEARS
+        # Make YEARS - 0,5 means grab the current year and 4 more years (5 years); 1,4 means grab the second year, and 3 more years (4 years)
         years = OrderedDict()
         for i in range(0, 5):
             bill_year = self.extract_with_prefix(response, 'TaxBillInfo_rptTaxBill_taxBillYear_{}'.format(i))
@@ -124,6 +124,10 @@ class PropertyinfoSpider(CSVFeedSpider):
             not_available = response.xpath('//div[@id="ContentPlaceHolder1_TaxBillInfo_rptTaxBill_Panel6_{}"]/div[@class="pop2Display"]/a/span/text()'.format(i)).extract()
             if not_available:
 			    years[bill_year]['not_available'] = 'Not Available'
+
+            divided_pin = response.xpath('//div[@id="ContentPlaceHolder1_TaxBillInfo_rptTaxBill_Panel4_{}"]/div[@class="pop2Display"]/a/span/text()'.format(i)).extract()
+            if divided_pin:
+			    years[bill_year]['divided_pin'] = 'Divided PIN'
 
         # Do TAX ASSESSMENTS
         for row in response.xpath('//div[@id="assesspop2"]/div[@class="modal-body2"]/table/tr'):
