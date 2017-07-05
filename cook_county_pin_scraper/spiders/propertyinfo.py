@@ -79,13 +79,6 @@ class PropertyinfoSpider(CSVFeedSpider):
             'class': self.extract_with_prefix(response, 'TaxYearInfo_propertyClass'),
             'description': property_class_description
         }
-        
-        building_age = self.extract_with_prefix(response, 'propertyBuildingAge')
-        if building_age:
-            item['building_age'] = building_age
-        else:
-            item['building_age'] = -1
-        # building age isn't there as of 2015 tax year
 
         mailing_tax_year = self.extract_with_prefix(response, 'mailingTaxYear', '/b')
         if mailing_tax_year:
