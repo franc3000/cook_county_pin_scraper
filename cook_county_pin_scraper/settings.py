@@ -19,5 +19,5 @@ COOKIES_DEBUG = False
 DOWNLOAD_TIMEOUT = 1000
 DUPEFILTER_CLASS = 'cook_county_pin_scraper.custom_filters.CustomFilter'
 DEFAULT_REQUEST_HEADERS = {
-    'Referer': 'http://www.cookcountypropertyinfo.com/cookviewerpinresults.aspx?pin=14193270260000'
+    'Referer': 'http://www.cookcountypropertyinfo.com'
 }
