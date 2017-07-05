@@ -10,13 +10,8 @@ class PropertyinfoSpider(CSVFeedSpider):
     headers = ['pin']
     name = "propertyinfo"
     allowed_domains = ["cookcountypropertyinfo.com"]
-<<<<<<< HEAD
     start_urls = [
-    	"http://www.chicagocityscape.com/propertytaxes/pins_lists/extract_these_pins.txt"
-=======
-    start_urls = [ 
-    	"file:///list_of_pins.txt"
->>>>>>> scrape-2015-tax-data
+    	"https://raw.githubusercontent.com/stevevance/cook_county_assessor_scraper/master/pins_list_random_100.csv"
     ]
     state = OrderedDict()
 
