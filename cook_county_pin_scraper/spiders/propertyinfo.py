@@ -103,13 +103,8 @@ class PropertyinfoSpider(CSVFeedSpider):
 
         # Make YEARS - 0,5 means grab the current year and 4 more years (5 years); 1,4 means grab the second year, and 3 more years (4 years)
         years = OrderedDict()
-<<<<<<< HEAD
-        for i in range(1, 4):
-            bill_year = self.extract_with_prefix(response, 'rptTaxBill_ctl0{}_taxBillYear'.format(i))
-=======
         for i in range(0, 5):
             bill_year = self.extract_with_prefix(response, 'TaxBillInfo_rptTaxBill_taxBillYear_{}'.format(i))
->>>>>>> scrape-2015-tax-data
             if bill_year:
                 bill_year = bill_year.replace(':', '')
                 bill_year = int(bill_year)
