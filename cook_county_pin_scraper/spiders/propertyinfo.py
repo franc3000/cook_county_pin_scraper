@@ -11,7 +11,7 @@ class PropertyinfoSpider(CSVFeedSpider):
     name = "propertyinfo"
     allowed_domains = ["cookcountypropertyinfo.com"]
     start_urls = [
-    	"file://~/root/cook_county_pin_scraper/lists/batch_080717_1107.csv"
+    	"file://~/root/cook_county_pin_scraper/lists/batch_080817_1107.csv"
     ]
     state = OrderedDict()
 
