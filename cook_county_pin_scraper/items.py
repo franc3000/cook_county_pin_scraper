@@ -36,3 +36,6 @@ class Property(scrapy.Item):
     # mailing_city_state_zip = scrapy.Field()
 
     tax_history = scrapy.Field()
+    
+    exemption_history = scrapy.Field()
+    appeals = scrapy.Field()
