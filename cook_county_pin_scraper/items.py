@@ -28,7 +28,6 @@ class Property(scrapy.Item):
     lot_size = scrapy.Field()
     building_size = scrapy.Field()
     property_class = scrapy.Field()
-    building_age = scrapy.Field()
 
     mailing_address = scrapy.Field()
     # mailing_tax_year = scrapy.Field()
@@ -37,3 +36,6 @@ class Property(scrapy.Item):
     # mailing_city_state_zip = scrapy.Field()
 
     tax_history = scrapy.Field()
+    
+    exemption_history = scrapy.Field()
+    appeals = scrapy.Field()

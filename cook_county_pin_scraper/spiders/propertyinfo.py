@@ -10,13 +10,9 @@ class PropertyinfoSpider(CSVFeedSpider):
     headers = ['pin']
     name = "propertyinfo"
     allowed_domains = ["cookcountypropertyinfo.com"]
-<<<<<<< HEAD
     start_urls = [
-    	"http://www.chicagocityscape.com/propertytaxes/pins_lists/extract_these_pins.txt"
-=======
-    start_urls = [ 
-    	"file:///list_of_pins.txt"
->>>>>>> scrape-2015-tax-data
+    	"file://~/root/cook_county_pin_scraper/lists/batch43.csv"
+    	#"file:///Users/stevevance/Sites/cook_county_pin_scraper/lists/sample.csv"
     ]
     state = OrderedDict()
 
@@ -25,7 +21,7 @@ class PropertyinfoSpider(CSVFeedSpider):
         return scrapy.Request('http://www.cookcountypropertyinfo.com/cookviewerpinresults.aspx?pin='+pin, callback=self.parse_pin)
 
     def extract_with_prefix(self, response, suffix, inner_part=''):
-        ext = response.xpath('//span[@id="ContentPlaceHolder1_{}"]{}/text()'.format(suffix, inner_part))
+        ext = response.xpath('//*[@id="ContentPlaceHolder1_{}"]{}/text()'.format(suffix, inner_part))
         if len(ext) == 1:
             return ext[0].extract()
         else:
@@ -84,13 +80,6 @@ class PropertyinfoSpider(CSVFeedSpider):
             'class': self.extract_with_prefix(response, 'TaxYearInfo_propertyClass'),
             'description': property_class_description
         }
-        
-        building_age = self.extract_with_prefix(response, 'propertyBuildingAge')
-        if building_age:
-            item['building_age'] = building_age
-        else:
-            item['building_age'] = -1
-        # building age isn't there as of 2015 tax year
 
         mailing_tax_year = self.extract_with_prefix(response, 'mailingTaxYear', '/b')
         if mailing_tax_year:
@@ -108,13 +97,8 @@ class PropertyinfoSpider(CSVFeedSpider):
 
         # Make YEARS - 0,5 means grab the current year and 4 more years (5 years); 1,4 means grab the second year, and 3 more years (4 years)
         years = OrderedDict()
-<<<<<<< HEAD
-        for i in range(1, 4):
-            bill_year = self.extract_with_prefix(response, 'rptTaxBill_ctl0{}_taxBillYear'.format(i))
-=======
         for i in range(0, 5):
             bill_year = self.extract_with_prefix(response, 'TaxBillInfo_rptTaxBill_taxBillYear_{}'.format(i))
->>>>>>> scrape-2015-tax-data
             if bill_year:
                 bill_year = bill_year.replace(':', '')
                 bill_year = int(bill_year)
@@ -176,5 +160,38 @@ class PropertyinfoSpider(CSVFeedSpider):
             year_dict = dict(year=year)
             year_dict.update(attrs)
             item['tax_history'].append(year_dict)
+            
+            
+        # exemption and appeal history  
+        exemptions = OrderedDict()
+        for year, attrs in years.items():
+
+            #exemption_status = response.xpath('//*[@id="exemption{}-button"]/span/text()'.format(year) )
+            exemption_result = response.xpath('//*[@id="exemption{}-popup"]/div[1]/text()'.format(year) )
+            
+            if exemption_result:
+                exemptions[year] = exemption_result[1].extract().strip()
+            else:
+                exemptions[year] = None
+                
+        item['exemptions'] = exemptions
+        
+        # appeals
+        appeals = OrderedDict()
+        for year, attrs in years.items():
+
+            appeal_filed = response.xpath('//*[@id="appealfilednotaccepting2{}-button"]/span/text()'.format(year) )
+            appeal_not_being_accepted = response.xpath('//*[@id="appealsnotaccepting2{}-button"]/span/text()'.format(year) )
+            
+            status = None
+            if appeal_filed:
+                status = appeal_filed[0].extract().strip()
+            
+            if appeal_not_being_accepted:
+                status = appeal_not_being_accepted[0].extract().strip()
+                
+            appeals[year] = status
+                
+        item['appeals'] = appeals
 
         yield item
