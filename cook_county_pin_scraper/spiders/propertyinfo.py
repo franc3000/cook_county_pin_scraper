@@ -11,7 +11,7 @@ class PropertyinfoSpider(CSVFeedSpider):
     name = "propertyinfo"
     allowed_domains = ["cookcountypropertyinfo.com"]
     start_urls = [
-    	"file://~/root/cook_county_pin_scraper/lists/batch43.csv"
+    	"file://~/root/cook_county_pin_scraper/lists/batch44.csv"
     	#"file:///Users/stevevance/Sites/cook_county_pin_scraper/lists/sample.csv"
     ]
     state = OrderedDict()
@@ -154,6 +154,7 @@ class PropertyinfoSpider(CSVFeedSpider):
             year = int(year.strip())
             tax_rate = float(text.strip())
             years[year]['tax_rate'] = tax_rate
+        # There is a bug in the code above that collects the tax rate for the 2016 tax year (which was scraped in 2017)
 
         item['tax_history'] = []
         for year, attrs in years.items():
