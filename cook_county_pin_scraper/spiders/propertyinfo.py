@@ -11,15 +11,17 @@ class PropertyinfoSpider(CSVFeedSpider):
     name = "propertyinfo"
     allowed_domains = ["cookcountypropertyinfo.com"]
     start_urls = [
-        #"file://~/root/cook_county_pin_scraper/lists/batch1.csv"
+        "file:///Users/stevevance/Sites/cook_county_pin_scraper/lists/batch1.csv"
         #"file:///Users/stevevance/Sites/cook_county_pin_scraper/lists/sample.csv"
-        "http://chicagocityscape.com/scrapy/batch1.csv"
+        #"http://chicagocityscape.com/scrapy/batch2.csv"
     ]
     state = OrderedDict()
 
     def parse_row(self, response, row):
         pin = row['pin']
-        return scrapy.Request('http://www.cookcountypropertyinfo.com/cookviewerpinresults.aspx?pin='+pin, callback=self.parse_pin)
+        url = "http://www.cookcountypropertyinfo.com/cookviewerpinresults.aspx?pin="+pin
+        #url = "file:///Users/stevevance/Sites/cook_county_pin_scraper/cook_county_pin_scraper/test.html"
+        return scrapy.Request(url, callback=self.parse_pin)
 
     def extract_with_prefix(self, response, suffix, inner_part=''):
         ext = response.xpath('//*[@id="ContentPlaceHolder1_{}"]{}/text()'.format(suffix, inner_part))
@@ -31,21 +33,23 @@ class PropertyinfoSpider(CSVFeedSpider):
     def parse_pin(self, response):
         if self.extract_with_prefix(response, 'failure'):
             yield None
+        
+        print "Response:"
             
         self.state['items_count'] = self.state.get('items_count', 0) + 1
 
         item = Property()
 
-        item['property_tax_year'] = self.extract_with_prefix(response, 'TaxYearInfo_assessmentTaxYear2')
-        if item['property_tax_year']:
-            if item['property_tax_year'][-4:].isnumeric():
-                item['property_tax_year'] = int(item['property_tax_year'][-4:])
-            else:
-                item['property_tax_year'] = -1
-        else:
+        # First, create the property_tax_year
+        property_tax_year = self.extract_with_prefix(response, "TaxBillInfo_rptTaxBill_taxBillYear_0")
+        property_tax_year = int(re.sub('[^0-9]+', '', property_tax_year))
+        item['property_tax_year'] = property_tax_year
+        if not item['property_tax_year']:
             item['property_tax_year'] = -1
+        print property_tax_year
 
         item['pin'] = self.extract_with_prefix(response, 'lblResultTitle')
+        item['pin14'] = re.sub('[^0-9]+', '', item['pin'])
         item['address'] = self.extract_with_prefix(response, 'PropertyInfo_propertyAddress')
         item['city'] = self.extract_with_prefix(response, 'PropertyInfo_propertyCity')
         item['zip_code'] = self.extract_with_prefix(response, 'PropertyInfo_propertyZip')
@@ -62,6 +66,9 @@ class PropertyinfoSpider(CSVFeedSpider):
             item['total_assessed_value'] = float(total_assessed_value.replace('$', '').replace(',',''))
         else:
             item['total_assessed_value'] = -1
+            
+        # Which assessment pass is this?
+        item['assessment_pass'] = self.extract_with_prefix(response, 'TaxYearInfo_propertyAssessorPass').strip("()")
         
         item['lot_size'] = self.extract_with_prefix(response, 'TaxYearInfo_propertyLotSize')
         if item['lot_size']:
@@ -82,15 +89,12 @@ class PropertyinfoSpider(CSVFeedSpider):
             'description': property_class_description
         }
 
-        mailing_tax_year = self.extract_with_prefix(response, 'mailingTaxYear', '/b')
-        if mailing_tax_year:
-            mailing_tax_year = int(mailing_tax_year[-4:])
-        # mailing tax year isn't there as of 2015 tax year
+        # Make the Mailing Address
         mailing_name = self.extract_with_prefix(response, 'PropertyInfo_propertyMailingName')
         mailing_address = self.extract_with_prefix(response, 'PropertyInfo_propertyMailingAddress')
         mailing_city_state_zip = self.extract_with_prefix(response, 'PropertyInfo_propertyMailingCityStateZip')
         item['mailing_address'] = OrderedDict([
-            ('year', mailing_tax_year),
+            ('year', property_tax_year),
             ('name', mailing_name),
             ('address', mailing_address),
             ('city_state_zip', mailing_city_state_zip),
@@ -98,19 +102,24 @@ class PropertyinfoSpider(CSVFeedSpider):
 
         # Make YEARS - 0,5 means grab the current year and 4 more years (5 years); 1,4 means grab the second year, and 3 more years (4 years)
         years = OrderedDict()
+        
+        # Make Tax History
         for i in range(0, 5):
             bill_year = self.extract_with_prefix(response, 'TaxBillInfo_rptTaxBill_taxBillYear_{}'.format(i))
             if bill_year:
                 bill_year = bill_year.replace(':', '')
                 bill_year = int(bill_year)
+                
             bill_amount = self.extract_with_prefix(response, 'TaxBillInfo_rptTaxBill_taxBillAmount_{}'.format(i))
             if bill_amount:
                 bill_amount = float(bill_amount.replace('$', '').replace(',', ''))
 
             years[bill_year] = {
+	            'year': bill_year,
                 'bill': bill_amount
             }
 
+            # these are all optional
             bill_exemption = response.xpath('//div[@id="ContentPlaceHolder1_TaxBillInfo_rptTaxBill_Panel5_{}"]/div[@class="pop2Display"]/a/span/text()'.format(i)).extract()
             if bill_exemption:
 			    years[bill_year]['exempt'] = 'Exempt PIN'
@@ -125,44 +134,35 @@ class PropertyinfoSpider(CSVFeedSpider):
 			    years[bill_year]['divided_pin'] = 'Divided PIN'
 
         # Do TAX ASSESSMENTS
-        for row in response.xpath('//div[@id="assesspop2"]/div[@class="modal-body2"]/table/tr'):
+        tax_assessments = response.xpath('//div[@id="assesspop2"]/div[@class="modal-body2"]/table/tr')
+        for row in tax_assessments:
             year, assessed_value = row.xpath('td/text()').extract()
             year = int(year.strip())
             assessed_value = int(assessed_value.replace(',', ''))
             years[year]['assessment'] = assessed_value
-
-        # Do TAX CODES
-        tax_code_year = int(self.extract_with_prefix(response, 'TaxYearInfo_taxCodeTaxYear')[1:5])
-        tax_code = self.extract_with_prefix(response, 'TaxYearInfo_propertyTaxCode')
-        # sometimes the tax_code_year is not contained in the years item from above so we must set an empty array for it
-        if tax_code_year not in years:
-            years[tax_code_year] = {}
-        years[tax_code_year]['tax_code'] = tax_code
         
         # Do TAX RATES
         tax_rates_text = []
-        #tax_rates_text.append("this text should be removed")
-        #tax_rates_text.append("2014 <span>text</span> 6.554")
+        tax_rates_table = response.xpath('//table[@id="taxratehistorytable"]/tr')
+        
+        # remove the first item in tax_rates_text aray because it's a paragraph and not a tax rate
+        tax_rates_table.pop(0)
+        
+        # iterate the tax rates
+        for row in tax_rates_table:
+            cells = row.xpath('td/text()').extract()
+            cell = {
+            	'year': re.sub('[^A-Za-z0-9]+', '', cells[0]),
+            	'tax_rate': re.sub('[^A-Za-z0-9.]+', '', cells[1])
+            }
+            tax_rates_text.append(cell)
 
-        for row in response.xpath('//table[@id="taxratehistorytable"]/tr'):
-            text = row.xpath('td/text()').extract()
-            tax_rates_text.append(text)
-            
-        # remove the first item in tax_rates_text because it's a paragraph
-        tax_rates_text.pop(0)
-        for year, text in tax_rates_text:
+        # parse the tax_rates_text and assign the tax rates to the year array
+        for row in tax_rates_text:
             #splitted = re.split("<span.*</span>", text)
-            year = int(year.strip())
-            tax_rate = float(text.strip())
+            year = int(row['year'])
+            tax_rate = float(row['tax_rate'])
             years[year]['tax_rate'] = tax_rate
-        # There is a bug in the code above that collects the tax rate for the 2016 tax year (which was scraped in 2017)
-
-        item['tax_history'] = []
-        for year, attrs in years.items():
-            year_dict = dict(year=year)
-            year_dict.update(attrs)
-            item['tax_history'].append(year_dict)
-            
             
         # exemption and appeal history  
         exemptions = OrderedDict()
@@ -173,6 +173,7 @@ class PropertyinfoSpider(CSVFeedSpider):
             
             if exemption_result:
                 exemptions[year] = exemption_result[1].extract().strip()
+                years[year]['exemption'] = exemptions[year]
             else:
                 exemptions[year] = None
                 
@@ -193,7 +194,24 @@ class PropertyinfoSpider(CSVFeedSpider):
                 status = appeal_not_being_accepted[0].extract().strip()
                 
             appeals[year] = status
+            years[year]['appeals'] = appeals[year]
                 
         item['appeals'] = appeals
+        
+        # Do TAX CODES (after getting property_tax_year)
+        tax_code = self.extract_with_prefix(response, 'TaxYearInfo_propertyTaxCode')
+        # sometimes the tax_code_year is not contained in the years item from Tax Assessments so we must set an empty array for it
+        print years
+        print years[property_tax_year]
+        if not years[property_tax_year]:
+            years[property_tax_year] = {}
+        years[property_tax_year]['tax_code'] = tax_code
+        
+        # Create the final "years", or tax_history array
+        item['tax_history'] = []
+        for year, attrs in years.items():
+            year_dict = dict(year=year)
+            year_dict.update(attrs)
+            item['tax_history'].append(year_dict)
 
         yield item

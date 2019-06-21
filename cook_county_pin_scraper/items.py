@@ -10,6 +10,7 @@ import scrapy
 
 class Property(scrapy.Item):
     pin = scrapy.Field()
+    pin14 = scrapy.Field()
     property_tax_year = scrapy.Field()
     address = scrapy.Field()
     city = scrapy.Field()
@@ -22,6 +23,7 @@ class Property(scrapy.Item):
     total_assessed_value = scrapy.Field()
     exemptions = scrapy.Field()
     dummy = scrapy.Field()
+    assessment_pass = scrapy.Field()
 
     assessment_tax_year = scrapy.Field()
     estimated_value = scrapy.Field()
