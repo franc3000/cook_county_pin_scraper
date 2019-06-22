@@ -32,10 +32,6 @@ class Property(scrapy.Item):
     property_class = scrapy.Field()
 
     mailing_address = scrapy.Field()
-    # mailing_tax_year = scrapy.Field()
-    # mailing_name = scrapy.Field()
-    # mailing_address = scrapy.Field()
-    # mailing_city_state_zip = scrapy.Field()
 
     tax_history = scrapy.Field()
     
