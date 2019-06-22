@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# scrapy crawl propertyinfo -o properties.json -t jsonlines -L DEBUG
 import scrapy
 import re
 from scrapy.spiders import CSVFeedSpider
@@ -33,23 +34,26 @@ class PropertyinfoSpider(CSVFeedSpider):
     def parse_pin(self, response):
         if self.extract_with_prefix(response, 'failure'):
             yield None
-        
-        print "Response:"
-            
+
         self.state['items_count'] = self.state.get('items_count', 0) + 1
 
         item = Property()
 
-        # First, create the property_tax_year
+        # First, create the property_tax_year (if we don't have one, then do not scrape this PIN)
         property_tax_year = self.extract_with_prefix(response, "TaxBillInfo_rptTaxBill_taxBillYear_0")
-        property_tax_year = int(re.sub('[^0-9]+', '', property_tax_year))
+        if property_tax_year:
+            property_tax_year = int(re.sub('[^0-9]+', '', property_tax_year))
+        else:
+        	yield None
+        
         item['property_tax_year'] = property_tax_year
         if not item['property_tax_year']:
             item['property_tax_year'] = -1
-        print property_tax_year
 
         item['pin'] = self.extract_with_prefix(response, 'lblResultTitle')
-        item['pin14'] = re.sub('[^0-9]+', '', item['pin'])
+        if item['pin']:
+	        item['pin14'] = re.sub('[^0-9]+', '', item['pin'])
+        
         item['address'] = self.extract_with_prefix(response, 'PropertyInfo_propertyAddress')
         item['city'] = self.extract_with_prefix(response, 'PropertyInfo_propertyCity')
         item['zip_code'] = self.extract_with_prefix(response, 'PropertyInfo_propertyZip')
@@ -201,8 +205,6 @@ class PropertyinfoSpider(CSVFeedSpider):
         # Do TAX CODES (after getting property_tax_year)
         tax_code = self.extract_with_prefix(response, 'TaxYearInfo_propertyTaxCode')
         # sometimes the tax_code_year is not contained in the years item from Tax Assessments so we must set an empty array for it
-        print years
-        print years[property_tax_year]
         if not years[property_tax_year]:
             years[property_tax_year] = {}
         years[property_tax_year]['tax_code'] = tax_code
