@@ -72,7 +72,9 @@ class PropertyinfoSpider(CSVFeedSpider):
             item['total_assessed_value'] = -1
             
         # Which assessment pass is this?
-        item['assessment_pass'] = self.extract_with_prefix(response, 'TaxYearInfo_propertyAssessorPass').strip("()")
+        item['assessment_pass'] = self.extract_with_prefix(response, 'TaxYearInfo_propertyAssessorPass')
+        if item['assessment_pass']:
+            item['assessment_pass'] = item['assessment_pass'].strip("()")
         
         item['lot_size'] = self.extract_with_prefix(response, 'TaxYearInfo_propertyLotSize')
         if item['lot_size']:
