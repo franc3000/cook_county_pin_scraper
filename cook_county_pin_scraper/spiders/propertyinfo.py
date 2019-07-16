@@ -3,6 +3,7 @@
 import scrapy
 import re
 from scrapy.spiders import CSVFeedSpider
+from scrapy.exceptions import DropItem
 from collections import OrderedDict
 from cook_county_pin_scraper.items import Property
 from cook_county_pin_scraper.custom_filters import CustomFilter
@@ -12,7 +13,7 @@ class PropertyinfoSpider(CSVFeedSpider):
     name = "propertyinfo"
     allowed_domains = ["cookcountypropertyinfo.com"]
     start_urls = [
-        #"file:///Users/stevevance/Sites/cook_county_pin_scraper/lists/batch1.csv"
+        #"file:///Users/stevevance/Sites/cook_county_pin_scraper/lists/batch12.csv"
         #"file:///Users/stevevance/Sites/cook_county_pin_scraper/lists/sample.csv"
         "http://chicagocityscape.com/scrapy/batch11.csv"
     ]
@@ -32,27 +33,26 @@ class PropertyinfoSpider(CSVFeedSpider):
             return None
 
     def parse_pin(self, response):
-        if self.extract_with_prefix(response, 'failure'):
-            yield None
+        item = Property()
+	    
+        # If there's a DIV with the ID of ContentPlaceHolder1_failure, then skip this item.
+        if response.xpath('//*[@id="ContentPlaceHolder1_failure"]'):
+            raise DropItem("Item contained 'failure' DIV")
 
         self.state['items_count'] = self.state.get('items_count', 0) + 1
-
-        item = Property()
-
-        # First, create the property_tax_year (if we don't have one, then do not scrape this PIN)
-        property_tax_year = self.extract_with_prefix(response, "TaxBillInfo_rptTaxBill_taxBillYear_0")
-        if property_tax_year:
-            property_tax_year = int(re.sub('[^0-9]+', '', property_tax_year))
-        else:
-        	yield None
         
-        item['property_tax_year'] = property_tax_year
-        if not item['property_tax_year']:
-            item['property_tax_year'] = -1
-
+        # Check for a PIN; if none, skip this PIN and don't create a record for it
         item['pin'] = self.extract_with_prefix(response, 'lblResultTitle')
         if item['pin']:
 	        item['pin14'] = re.sub('[^0-9]+', '', item['pin'])
+        else:
+	        yield None
+
+        # Create the property_tax_year
+        property_tax_year = self.extract_with_prefix(response, "TaxBillInfo_rptTaxBill_taxBillYear_0")
+        if property_tax_year:
+            property_tax_year = int(re.sub('[^0-9]+', '', property_tax_year))
+        item['property_tax_year'] = property_tax_year
         
         item['address'] = self.extract_with_prefix(response, 'PropertyInfo_propertyAddress')
         item['city'] = self.extract_with_prefix(response, 'PropertyInfo_propertyCity')
@@ -152,7 +152,8 @@ class PropertyinfoSpider(CSVFeedSpider):
         tax_rates_table = response.xpath('//table[@id="taxratehistorytable"]/tr')
         
         # remove the first item in tax_rates_text aray because it's a paragraph and not a tax rate
-        tax_rates_table.pop(0)
+        if len(tax_rates_table) > 0:
+            tax_rates_table.pop(0)
         
         # iterate the tax rates
         for row in tax_rates_table:
