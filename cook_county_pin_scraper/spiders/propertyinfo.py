@@ -14,7 +14,7 @@ class PropertyinfoSpider(CSVFeedSpider):
     start_urls = [
         #"file:///Users/stevevance/Sites/cook_county_pin_scraper/lists/batch1.csv"
         #"file:///Users/stevevance/Sites/cook_county_pin_scraper/lists/sample.csv"
-        "http://chicagocityscape.com/scrapy/batch10.csv"
+        "http://chicagocityscape.com/scrapy/batch11.csv"
     ]
     state = OrderedDict()
 
