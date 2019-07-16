@@ -46,7 +46,7 @@ class PropertyinfoSpider(CSVFeedSpider):
         if item['pin']:
 	        item['pin14'] = re.sub('[^0-9]+', '', item['pin'])
         else:
-	        yield None
+	        raise DropItem("Item didn't contain PIN")
 
         # Create the property_tax_year
         property_tax_year = self.extract_with_prefix(response, "TaxBillInfo_rptTaxBill_taxBillYear_0")
