@@ -13,17 +13,19 @@ class PropertyinfoSpider(CSVFeedSpider):
     name = "propertyinfo"
     allowed_domains = ["cookcountypropertyinfo.com"]
     start_urls = [
-        #"file:///Users/stevevance/Sites/cook_county_pin_scraper/lists/batch12.csv"
+        #"file:///Users/stevevance/Sites/cook_county_pin_scraper/lists/batch13.csv"
         #"file:///Users/stevevance/Sites/cook_county_pin_scraper/lists/sample.csv"
-        "http://chicagocityscape.com/scrapy/batch12.csv"
+        "http://chicagocityscape.com/scrapy/batch13.csv"
     ]
     state = OrderedDict()
 
     def parse_row(self, response, row):
         pin = row['pin']
         url = "http://www.cookcountypropertyinfo.com/cookviewerpinresults.aspx?pin="+pin
-        #url = "file:///Users/stevevance/Sites/cook_county_pin_scraper/cook_county_pin_scraper/test.html"
-        return scrapy.Request(url, callback=self.parse_pin)
+        request = scrapy.Request(url, callback=self.parse_pin)
+        request.meta['pin'] = pin
+        #return scrapy.Request(url, callback=self.parse_pin)
+        yield request
 
     def extract_with_prefix(self, response, suffix, inner_part=''):
         ext = response.xpath('//*[@id="ContentPlaceHolder1_{}"]{}/text()'.format(suffix, inner_part))
@@ -34,10 +36,11 @@ class PropertyinfoSpider(CSVFeedSpider):
 
     def parse_pin(self, response):
         item = Property()
+        requested_pin = response.meta['pin']
 	    
         # If there's a DIV with the ID of ContentPlaceHolder1_failure, then skip this item.
         if response.xpath('//*[@id="ContentPlaceHolder1_failure"]'):
-            raise DropItem("Item contained 'failure' DIV")
+            raise DropItem('{0} page contained "failure" DIV'.format(requested_pin))
 
         self.state['items_count'] = self.state.get('items_count', 0) + 1
         
@@ -45,8 +48,8 @@ class PropertyinfoSpider(CSVFeedSpider):
         item['pin'] = self.extract_with_prefix(response, 'lblResultTitle')
         if item['pin']:
 	        item['pin14'] = re.sub('[^0-9]+', '', item['pin'])
-        else:
-	        raise DropItem("Item didn't contain PIN")
+        #else:
+	    #    raise DropItem('{0} didn\'t contain PIN'.format(requested_pin))
 
         # Create the property_tax_year
         property_tax_year = self.extract_with_prefix(response, "TaxBillInfo_rptTaxBill_taxBillYear_0")
