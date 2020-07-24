@@ -1,7 +1,4 @@
-import os
-
 from scrapy.dupefilters import RFPDupeFilter
-from scrapy.utils.request import request_fingerprint
 
 
 class CustomFilter(RFPDupeFilter):
