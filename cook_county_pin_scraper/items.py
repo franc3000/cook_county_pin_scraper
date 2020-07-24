@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Define here the models for your scraped items
 #
 # See documentation in:
@@ -16,9 +14,9 @@ class Property(scrapy.Item):
     city = scrapy.Field()
     zip_code = scrapy.Field()
     township = scrapy.Field()
-    
+
     status = scrapy.Field()
-    
+
     estimated_property_value = scrapy.Field()
     total_assessed_value = scrapy.Field()
     exemptions = scrapy.Field()
@@ -34,6 +32,6 @@ class Property(scrapy.Item):
     mailing_address = scrapy.Field()
 
     tax_history = scrapy.Field()
-    
+
     exemption_history = scrapy.Field()
     appeals = scrapy.Field()
