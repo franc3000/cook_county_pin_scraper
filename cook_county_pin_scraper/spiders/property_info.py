@@ -12,14 +12,15 @@ from scrapy.spiders import CSVFeedSpider
 from cook_county_pin_scraper.items import Property
 
 
-class PropertyinfoSpider(CSVFeedSpider):
+class PropertyInfoSpider(CSVFeedSpider):
     headers = ["pin"]
     name = "propertyinfo"
     allowed_domains = ["cookcountypropertyinfo.com"]
     start_urls = [
         # "file:///Users/franklin/Code/cook_county_pin_scraper/lists/westchicago-30-vacant.csv",
-        "file:///Users/franklin/Code/cook_county_pin_scraper/lists/westchicago-115-vacant.csv",
+        # "file:///Users/franklin/Code/cook_county_pin_scraper/lists/westchicago-115-vacant.csv",
         # "file:///Users/franklin/Code/cook_county_pin_scraper/lists/westchicago-141-vacant.csv",
+        "file:///Users/franklin/Code/cook_county_pin_scraper/lists/westchicago-150-vacant.csv",
     ]
     state = OrderedDict()
 
